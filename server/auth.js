@@ -18,10 +18,10 @@ export function verifyPassword(password, salt, storedHash) {
 function initAdminAuth() {
   const authData = getSetting('admin_auth', null);
   if (!authData) {
-    // Default initial password: toby2024
-    const initial = hashPassword('toby2024');
+    if (!process.env.ADMIN_INITIAL_PASSWORD) return;
+    const initial = hashPassword(process.env.ADMIN_INITIAL_PASSWORD);
     saveSettings({ admin_auth: initial });
-    console.log('[Auth] Initialized default admin credentials (password: toby2024)');
+    console.log('[Auth] Initialized studio administrator.');
   }
 }
 initAdminAuth();
@@ -50,8 +50,8 @@ export function authenticateAdmin(password) {
     token,
     expiresAt,
     user: {
-      name: getSetting('admin_name', 'Toby S.'),
-      shop: getSetting('shop_name', "Toby's Auto Mechanic")
+      name: getSetting('admin_name', 'Porsche Ray'),
+      shop: getSetting('shop_name', "The Makeover Mommy")
     }
   };
 }
@@ -75,8 +75,8 @@ export function verifySession(token) {
     token: session.token,
     expiresAt: session.expires_at,
     user: {
-      name: getSetting('admin_name', 'Toby S.'),
-      shop: getSetting('shop_name', "Toby's Auto Mechanic")
+      name: getSetting('admin_name', 'Porsche Ray'),
+      shop: getSetting('shop_name', "The Makeover Mommy")
     }
   };
 }

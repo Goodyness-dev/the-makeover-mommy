@@ -80,12 +80,12 @@ db.exec(`
 
 // Pre-populate default settings if empty
 const defaultSettings = {
-  shop_name: "Toby's Auto Mechanic",
-  shop_tagline: "Dependable Diesel & Automotive Care",
-  shop_address: "15276 W Jimmie Kerr Blvd, Ste 1, Casa Grande, AZ 85122",
-  shop_phone: "(520) 836-6921",
-  shop_email: "service@tobysautomechanic.com",
-  admin_name: "Toby S.",
+  shop_name: "The Makeover Mommy",
+  shop_tagline: "Permanent Makeup & Restorative Artistry",
+  shop_address: "6693 Folsom-Auburn Road, Suite E, Folsom, CA 95630",
+  shop_phone: "(916) 542-8801",
+  shop_email: "themakeovermommyllc@gmail.com",
+  admin_name: "Porsche Ray",
   telegram_enabled: false,
   telegram_bot_token: "",
   telegram_chat_id: "",
@@ -94,8 +94,8 @@ const defaultSettings = {
   emailjs_template_id_notify: "",
   emailjs_template_id_quote: "",
   emailjs_public_key: "",
-  default_warranty: "12-month / 12,000-mile parts & labor warranty",
-  default_quote_notes: "Thank you for reaching out to Toby's Auto Mechanic! Please review your custom quote above. If you'd like to lock in this appointment or drop off your vehicle, give us a call or reply directly to this email."
+  default_warranty: "Aftercare is discussed during your consultation.",
+  default_quote_notes: "Thank you for reaching out to The Makeover Mommy! Please review your custom quote above. If you'd like to discuss your treatment and arrange an appointment, give us a call or reply directly to this email."
 };
 
 const getSettingStmt = db.prepare('SELECT value FROM settings WHERE key = ?');
@@ -183,11 +183,11 @@ export function insertQuote(quoteData) {
   // Automatically insert the customer's initial inquiry into the thread
   try {
     const inquiryText = [
-      `Vehicle: ${quoteData.vehicle_make || quoteData.make || ''} ${quoteData.vehicle_model_year || quoteData.modelAndYear || ''}`,
+      `Consultation: ${quoteData.vehicle_make || quoteData.make || ''} ${quoteData.vehicle_model_year || quoteData.modelAndYear || ''}`,
       `Service Requested: ${quoteData.detailed_service || quoteData.detailedService || quoteData.service_category || quoteData.serviceCategory || ''}`,
       (quoteData.engine_type || quoteData.engineType) ? `Engine Type: ${quoteData.engine_type || quoteData.engineType}` : null,
       (quoteData.custom_issue || quoteData.customIssue) ? `Issue Description: ${quoteData.custom_issue || quoteData.customIssue}` : null,
-      quoteData.details ? `Symptoms & Details: ${quoteData.details}` : null,
+      quoteData.details ? `Client notes: ${quoteData.details}` : null,
       (quoteData.needs_towing || quoteData.needsTowing) ? `🚨 Needs Towing` : null,
       (quoteData.needs_shuttle || quoteData.needsShuttle) ? `🚐 Needs Shuttle Ride` : null,
       quoteData.timeline ? `Timeline: ${quoteData.timeline}` : null,
@@ -276,7 +276,7 @@ export function saveCustomerQuoteResponse(id, { price, breakdown, turnaround, wa
     const quoteMsg = `💰 OFFICIAL QUOTE ESTIMATE: $${price}\n⏱ Estimated Turnaround: ${turnaround || 'Same Day / 1-2 Days'}\n🛡 Warranty: ${warranty || '12-month / 12,000-mile warranty'}${message ? `\n\nNote from Toby:\n"${message}"` : ''}`;
     addQuoteMessage(id, {
       sender: 'admin',
-      senderName: getSetting('admin_name', 'Toby S.'),
+      senderName: getSetting('admin_name', 'Porsche Ray'),
       message: quoteMsg,
       isQuote: true,
       quotePrice: String(price)
@@ -342,7 +342,7 @@ function formatQuoteRow(row) {
   };
 }
 
-export function addQuoteMessage(quoteId, { sender = 'admin', senderName = 'Toby S.', message, isQuote = false, quotePrice = null }) {
+export function addQuoteMessage(quoteId, { sender = 'admin', senderName = 'Porsche Ray', message, isQuote = false, quotePrice = null }) {
   const msgId = `MSG-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
   const now = new Date().toISOString();
   const stmt = db.prepare(`
@@ -397,7 +397,7 @@ try {
     const existingMsgs = getQuoteMessages(q.id);
     if (existingMsgs.length === 0) {
       const inquiryText = [
-        `Vehicle: ${q.make} ${q.modelAndYear}`,
+        `Consultation: ${q.make} ${q.modelAndYear}`,
         `Service Requested: ${q.detailedService || q.serviceCategory}`,
         q.engineType ? `Engine: ${q.engineType}` : null,
         q.customIssue ? `Issue: ${q.customIssue}` : null,
@@ -416,7 +416,7 @@ try {
       if (q.quotedPrice) {
         addQuoteMessage(q.id, {
           sender: 'admin',
-          senderName: getSetting('admin_name', 'Toby S.'),
+          senderName: getSetting('admin_name', 'Porsche Ray'),
           message: `💰 OFFICIAL QUOTE ESTIMATE: $${q.quotedPrice}\n⏱ Turnaround: ${q.estimatedTurnaround || '1-2 Days'}\n🛡 Warranty: ${q.warrantyNote || 'Standard warranty'}${q.adminMessage ? `\n\nNote from Toby:\n"${q.adminMessage}"` : ''}`,
           isQuote: true,
           quotePrice: String(q.quotedPrice)

@@ -12,26 +12,13 @@ export async function sendTelegramAlert(quote) {
     return { skipped: true, reason: 'Telegram notifications not configured or disabled' };
   }
 
-  const text = `
-🚨 *NEW QUOTE REQUEST — TOBY'S AUTO*
-━━━━━━━━━━━━━━━━━━━━
-👤 *Customer:* ${quote.name || quote.customer_name}
-📞 *Phone:* ${quote.phone || quote.customer_phone || 'Not provided'}
-✉️ *Email:* ${quote.email || quote.customer_email}
-📍 *Location:* ${quote.location || 'Casa Grande area'}
-
-🚙 *Vehicle:* ${quote.make || quote.vehicle_make} (${quote.modelAndYear || quote.vehicle_model_year})
-🛠 *Category:* ${quote.serviceCategory || quote.service_category}
-🔧 *Service:* ${quote.detailedService || quote.detailed_service}
-${quote.engineType && quote.engineType !== 'N/A' ? `⚙️ *Engine:* ${quote.engineType}\n` : ''}${quote.customIssue && quote.customIssue !== 'N/A' ? `📝 *Issue:* ${quote.customIssue}\n` : ''}
-💬 *Notes:* ${quote.details || 'None'}
-
-🛞 *Towing:* ${quote.needsTowing ? 'YES 🚨' : 'No'}
-🚐 *Shuttle:* ${quote.needsShuttle ? 'YES 🚐' : 'No'}
-⏰ *Timeline:* ${quote.timeline || 'ASAP'} ${quote.specificDate ? `(${quote.specificDate})` : ''}
-━━━━━━━━━━━━━━━━━━━━
-Quote ID: #${quote.id}
-`.trim();
+  const text = `NEW CONSULTATION — THE MAKEOVER MOMMY
+Client: ${quote.name || quote.customer_name}
+Phone: ${quote.phone || quote.customer_phone || 'Not provided'}
+Email: ${quote.email || quote.customer_email}
+Treatment: ${quote.detailedService || quote.detailed_service}
+Preferred timing: ${quote.timeline || 'Flexible'}
+Reference: ${quote.id}`;
 
   try {
     const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
@@ -62,13 +49,13 @@ export async function testTelegramConnection(botToken, chatId) {
   }
 
   const text = `
-🛠 *TOBY'S AUTO MECHANIC — TEST ALERT*
+🛠 *THE MAKEOVER MOMMY — TEST ALERT*
 ━━━━━━━━━━━━━━━━━━━━
 ✅ Connection successful!
 Your Telegram alert automation is configured and active.
 You will receive instant alerts for every new quote request here.
 
-Shop: 15276 W Jimmie Kerr Blvd, Ste 1, Casa Grande, AZ
+Studio: 6693 Folsom-Auburn Road, Suite E, Folsom, CA
 Phone: (520) 836-6921
 ━━━━━━━━━━━━━━━━━━━━
 Sent at: ${new Date().toLocaleString()}

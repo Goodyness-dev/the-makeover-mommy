@@ -113,6 +113,7 @@ const server = http.createServer(async (req, res) => {
     // -------------------------------------------------------------
     if (pathname === '/api/quotes' && method === 'POST') {
       const body = await parseBody(req);
+      if (!body.name?.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email || '') || !body.detailedService?.trim()) return sendError(res, 400, 'Name, valid email, and treatment are required');
       const quoteId = body.id || `QUOTE-${Date.now().toString().slice(-6)}`;
       const newQuote = insertQuote({ ...body, id: quoteId });
 
@@ -294,7 +295,7 @@ const server = http.createServer(async (req, res) => {
 
         const newMsg = addQuoteMessage(quoteId, {
           sender: 'admin',
-          senderName: body.senderName || session.user.name || 'Toby S.',
+          senderName: body.senderName || session.user.name || 'Porsche Ray',
           message: body.message,
           isQuote: Boolean(body.isQuote),
           quotePrice: body.quotePrice || null
@@ -306,11 +307,12 @@ const server = http.createServer(async (req, res) => {
         }
 
         // Send reply directly to customer email
-        sendCustomerInboxReplyEmail(quote, body.message, body.quotePrice).catch(e => console.error('[API] Reply email error:', e));
+        const emailDelivery = await sendCustomerInboxReplyEmail(quote, body.message, body.quotePrice);
 
         return sendJson(res, 201, {
           success: true,
-          message: newMsg
+          message: newMsg,
+          emailDelivery
         });
       }
     }
@@ -371,7 +373,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n======================================================`);
-  console.log(` 🚗 TOBY'S AUTO MECHANIC — BACKEND API SERVER ACTIVE`);
+  console.log(` THE MAKEOVER MOMMY — BACKEND API SERVER ACTIVE`);
   console.log(` Listening on: http://localhost:${PORT}`);
   console.log(` SQLite Database: server/data/toby.db`);
   console.log(`======================================================\n`);

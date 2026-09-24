@@ -1,8 +1,8 @@
 /**
- * Production API Client for Toby's Auto Mechanic Admin & Backend
+ * Production API Client for The Makeover Mommy Admin & Backend
  */
 
-const TOKEN_STORAGE_KEY = 'toby_admin_token';
+const TOKEN_STORAGE_KEY = 'makeover_admin_token';
 
 export function getStoredToken() {
   try {
@@ -24,7 +24,7 @@ export function setStoredToken(token) {
   }
 }
 
-const API_BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '');
+const API_BASE = '/api';
 
 function buildUrl(endpoint) {
   const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
@@ -65,73 +65,9 @@ async function request(endpoint, options = {}) {
 // ------------------------------------------------------------------
 // Auth APIs
 // ------------------------------------------------------------------
-const VALID_DEMO_PASSWORDS = [
-  'toby2024',
-  'admin2024',
-  import.meta.env.VITE_ADMIN_PASSWORD
-].filter(Boolean);
-
 export const authApi = {
-  async login(password) {
-    const trimmed = (password || '').trim();
-
-    try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 4000);
-      
-      const data = await request('/api/auth/login', {
-        method: 'POST',
-        body: JSON.stringify({ password: trimmed }),
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
-
-      if (data && data.token) {
-        setStoredToken(data.token);
-      }
-      return data;
-    } catch (err) {
-      if (VALID_DEMO_PASSWORDS.includes(trimmed)) {
-        const demoToken = `demo_token_${Date.now()}`;
-        setStoredToken(demoToken);
-        return {
-          success: true,
-          token: demoToken,
-          user: {
-            name: 'Executive Administrator',
-            shop: 'Client Management Portal'
-          }
-        };
-      }
-      throw err;
-    }
-  },
-
-  async verify() {
-    const token = getStoredToken();
-    if (!token) return { authenticated: false };
-    if (token.startsWith('demo_')) {
-      return { 
-        authenticated: true, 
-        user: { 
-          name: 'Executive Administrator', 
-          shop: 'Client Management Portal' 
-        } 
-      };
-    }
-    try {
-      return await request('/api/auth/me', { method: 'GET' });
-    } catch {
-      return { 
-        authenticated: true, 
-        user: { 
-          name: 'Executive Administrator', 
-          shop: 'Client Management Portal' 
-        } 
-      };
-    }
-  },
-
+ async login(password){const data=await request('/api/auth/login',{method:'POST',body:JSON.stringify({password:password.trim()})});if(data.success&&data.token)setStoredToken(data.token);return data;},
+ async verify(){if(!getStoredToken())return {authenticated:false};try{return await request('/api/auth/me');}catch{setStoredToken(null);return {authenticated:false};}},
   async logout() {
     try {
       await request('/api/auth/logout', { method: 'POST' });

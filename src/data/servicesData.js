@@ -186,5 +186,6 @@ export const SERVICE_CATEGORIES = [
   'Lips',
   'Eyes',
   'Paramedical',
-  'Skin'
+  'Skin',
+  'Makeup'
 ];
